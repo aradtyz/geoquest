@@ -10,6 +10,8 @@ async function checkMaintenance() {
 
         const config = await response.json();
 
+        alert("Maintenance: " + config.maintenance);
+
         if (config.maintenance === true) {
             window.location.href = "maintenance.html";
         } else {
@@ -19,7 +21,8 @@ async function checkMaintenance() {
     } catch (error) {
         console.error("Could not connect to GeoQuest Backend:", error);
 
-        // اگر Backend در دسترس نبود، فعلاً Maintenance نمایش بده
+        alert("خطا در اتصال به Backend");
+
         window.location.href = "maintenance.html";
     }
 }
