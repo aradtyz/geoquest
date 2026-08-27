@@ -1,79 +1,100 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<!DOCTYPE html><html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GeoQuest</title>
 
-    <title>GeoQuest</title>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    body {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        background: #0f172a;
+        color: #ffffff;
 
-            background: #0f172a;
-            color: #ffffff;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
 
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
+    .admin-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
 
+        padding: 10px 16px;
+
+        border: 1px solid #334155;
+        border-radius: 10px;
+
+        background: #1e293b;
+        color: white;
+
+        text-decoration: none;
+        font-size: 14px;
+
+        transition: 0.2s;
+    }
+
+    .admin-button:hover {
+        background: #334155;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 600px;
+
+        padding: 40px;
+
+        background: #1e293b;
+        border-radius: 24px;
+
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    h1 {
+        font-size: 42px;
+        margin-bottom: 18px;
+    }
+
+    p {
+        color: #94a3b8;
+        font-size: 18px;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 600px) {
         .container {
-            width: 90%;
-            max-width: 600px;
-
-            padding: 40px;
-
-            background: #1e293b;
-            border-radius: 24px;
-
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+            padding: 30px 20px;
         }
 
         h1 {
-            font-size: 42px;
-            margin-bottom: 18px;
+            font-size: 32px;
         }
 
         p {
-            color: #94a3b8;
-            font-size: 18px;
-            line-height: 1.8;
+            font-size: 16px;
         }
+    }
+</style>
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px 20px;
-            }
+</head><body><a class="admin-button" href="admin.html">
+    🔐 مدیریت
+</a>
 
-            h1 {
-                font-size: 32px;
-            }
+<main class="container">
+    <h1>🗺️ GeoQuest</h1>
 
-            p {
-                font-size: 16px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <main class="container">
-        <h1>🗺️ GeoQuest</h1>
-
-        <p>
-            به دنیای GeoQuest خوش آمدی!
-        </p>
-    </main>
+    <p>
+        به دنیای GeoQuest خوش آمدی!
+    </p>
+</main>
 
 </body>
 </html>
