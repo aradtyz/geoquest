@@ -1,0 +1,358 @@
+<!DOCTYPE html><html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GeoQuest Admin</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background: #0f172a;
+        color: white;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 420px;
+        padding: 30px;
+        background: #1e293b;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+        text-align: center;
+    }
+
+    h1 {
+        margin-bottom: 25px;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px;
+        margin-bottom: 12px;
+
+        border: 1px solid #334155;
+        border-radius: 10px;
+
+        background: #0f172a;
+        color: white;
+
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+        padding: 13px;
+        margin-top: 10px;
+
+        border: none;
+        border-radius: 10px;
+
+        background: #2563eb;
+        color: white;
+
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+    }
+
+    .logout {
+        background: #475569;
+    }
+
+    .logout:hover {
+        background: #334155;
+    }
+
+    .status {
+        margin: 25px 0;
+        padding: 15px;
+
+        border-radius: 12px;
+        background: #0f172a;
+
+        font-size: 18px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #message {
+        margin-top: 15px;
+        color: #94a3b8;
+    }
+</style>
+
+</head><body><div class="container"><!-- Login -->
+<section id="loginSection">
+
+    <h1>🔐 مدیریت GeoQuest</h1>
+
+    <input
+        id="username"
+        type="text"
+        placeholder="نام کاربری"
+        autocomplete="username"
+    >
+
+    <input
+        id="password"
+        type="password"
+        placeholder="رمز عبور"
+        autocomplete="current-password"
+    >
+
+    <button onclick="login()">
+        ورود
+    </button>
+
+    <p id="loginMessage"></p>
+
+</section>
+
+
+<!-- Admin Panel -->
+<section id="adminSection" class="hidden">
+
+    <h1>⚙️ پنل مدیریت</h1>
+
+    <div class="status">
+        وضعیت سایت:
+        <br><br>
+        <strong id="maintenanceStatus">
+            در حال بررسی...
+        </strong>
+    </div>
+
+    <button id="maintenanceButton" onclick="toggleMaintenance()">
+        ...
+    </button>
+
+    <button class="logout" onclick="logout()">
+        خروج
+    </button>
+
+    <p id="message"></p>
+
+</section>
+
+</div><script>
+
+const BACKEND_URL =
+    "https://geoquest-backend-ux73.onrender.com";
+
+
+// Login
+async function login() {
+
+    const username =
+        document.getElementById("username").value;
+
+    const password =
+        document.getElementById("password").value;
+
+    const message =
+        document.getElementById("loginMessage");
+
+    try {
+
+        const response = await fetch(
+            `${BACKEND_URL}/api/admin/login`,
+            {
+                method: "POST",
+
+                credentials: "include",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    username,
+                    password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            message.textContent =
+                data.message || "ورود ناموفق بود.";
+
+            return;
+        }
+
+        document
+            .getElementById("loginSection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("adminSection")
+            .classList.remove("hidden");
+
+        loadMaintenance();
+
+    } catch (error) {
+
+        message.textContent =
+            "خطا در اتصال به Backend";
+
+        console.error(error);
+    }
+}
+
+
+// Load maintenance status
+async function loadMaintenance() {
+
+    try {
+
+        const response = await fetch(
+            `${BACKEND_URL}/api/config`
+        );
+
+        const data = await response.json();
+
+        updateMaintenanceUI(data.maintenance);
+
+    } catch (error) {
+
+        document
+            .getElementById("maintenanceStatus")
+            .textContent =
+            "خطا در دریافت وضعیت";
+
+        console.error(error);
+    }
+}
+
+
+// Update UI
+function updateMaintenanceUI(maintenance) {
+
+    const status =
+        document.getElementById("maintenanceStatus");
+
+    const button =
+        document.getElementById("maintenanceButton");
+
+    if (maintenance === true) {
+
+        status.textContent =
+            "🔧 حالت تعمیر روشن است";
+
+        button.textContent =
+            "🟢 خاموش کردن حالت تعمیر";
+
+    } else {
+
+        status.textContent =
+            "🟢 سایت فعال است";
+
+        button.textContent =
+            "🔧 روشن کردن حالت تعمیر";
+    }
+}
+
+
+// Toggle maintenance
+async function toggleMaintenance() {
+
+    const status =
+        document.getElementById("maintenanceStatus");
+
+    const currentlyMaintenance =
+        status.textContent.includes("تعمیر");
+
+    const newValue =
+        !currentlyMaintenance;
+
+    try {
+
+        const response = await fetch(
+            `${BACKEND_URL}/api/admin/maintenance`,
+            {
+                method: "POST",
+
+                credentials: "include",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    maintenance: newValue
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            document.getElementById("message").textContent =
+                data.message || "خطا در تغییر وضعیت.";
+
+            return;
+        }
+
+        updateMaintenanceUI(data.maintenance);
+
+        document.getElementById("message").textContent =
+            "وضعیت با موفقیت تغییر کرد.";
+
+    } catch (error) {
+
+        document.getElementById("message").textContent =
+            "خطا در اتصال به Backend.";
+
+        console.error(error);
+    }
+}
+
+
+// Logout
+async function logout() {
+
+    try {
+
+        await fetch(
+            `${BACKEND_URL}/api/admin/logout`,
+            {
+                method: "POST",
+                credentials: "include"
+            }
+        );
+
+    } finally {
+
+        document
+            .getElementById("adminSection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("loginSection")
+            .classList.remove("hidden");
+
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+    }
+}
+
+</script></body>
+  </html>
