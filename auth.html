@@ -1,0 +1,700 @@
+<!DOCTYPE html><html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GeoQuest - ورود</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        min-height: 100vh;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background: #0f172a;
+        color: white;
+
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 430px;
+
+        padding: 35px;
+
+        background: #1e293b;
+
+        border-radius: 22px;
+
+        box-shadow:
+            0 20px 50px rgba(0, 0, 0, 0.35);
+
+        text-align: center;
+    }
+
+    .logo {
+        font-size: 60px;
+        margin-bottom: 10px;
+    }
+
+    h1 {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .subtitle {
+        color: #94a3b8;
+        margin-bottom: 28px;
+    }
+
+    input {
+        width: 100%;
+
+        padding: 14px;
+
+        margin-bottom: 12px;
+
+        border: 1px solid #334155;
+        border-radius: 10px;
+
+        background: #0f172a;
+        color: white;
+
+        font-size: 16px;
+
+        outline: none;
+    }
+
+    input:focus {
+        border-color: #3b82f6;
+    }
+
+    button {
+        width: 100%;
+
+        padding: 14px;
+
+        margin-top: 8px;
+
+        border: none;
+        border-radius: 10px;
+
+        background: #2563eb;
+        color: white;
+
+        font-size: 16px;
+
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .secondary {
+        background: #334155;
+    }
+
+    .secondary:hover {
+        background: #475569;
+    }
+
+    .switch {
+        margin-top: 20px;
+
+        color: #94a3b8;
+
+        font-size: 14px;
+    }
+
+    .switch button {
+        width: auto;
+
+        padding: 0;
+
+        margin: 0 5px;
+
+        background: none;
+
+        color: #60a5fa;
+
+        font-size: 14px;
+    }
+
+    .message {
+        min-height: 24px;
+
+        margin-top: 15px;
+
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .success {
+        color: #4ade80;
+    }
+
+    .error {
+        color: #f87171;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .user-box {
+        padding: 20px;
+
+        background: #0f172a;
+
+        border-radius: 14px;
+
+        margin-bottom: 20px;
+    }
+</style>
+
+</head><body><div class="container"><div class="logo">🗺️</div>
+
+<h1>GeoQuest</h1>
+
+<p class="subtitle" id="pageTitle">
+    ورود به حساب
+</p>
+
+
+<!-- LOGIN -->
+
+<section id="loginSection">
+
+    <input
+        id="loginEmail"
+        type="email"
+        placeholder="ایمیل"
+        autocomplete="email"
+    >
+
+    <input
+        id="loginPassword"
+        type="password"
+        placeholder="رمز عبور"
+        autocomplete="current-password"
+    >
+
+    <button id="loginButton" onclick="login()">
+        ورود
+    </button>
+
+    <div id="loginMessage" class="message"></div>
+
+    <div class="switch">
+        حساب نداری؟
+
+        <button onclick="showSignup()">
+            ساخت حساب
+        </button>
+    </div>
+
+</section>
+
+
+<!-- SIGNUP -->
+
+<section id="signupSection" class="hidden">
+
+    <input
+        id="signupEmail"
+        type="email"
+        placeholder="ایمیل"
+        autocomplete="email"
+    >
+
+    <input
+        id="signupPassword"
+        type="password"
+        placeholder="رمز عبور"
+        autocomplete="new-password"
+    >
+
+    <input
+        id="signupPasswordConfirm"
+        type="password"
+        placeholder="تکرار رمز عبور"
+        autocomplete="new-password"
+    >
+
+    <button id="signupButton" onclick="signup()">
+        ساخت حساب
+    </button>
+
+    <div id="signupMessage" class="message"></div>
+
+    <div class="switch">
+        حساب داری؟
+
+        <button onclick="showLogin()">
+            ورود
+        </button>
+    </div>
+
+</section>
+
+
+<!-- LOGGED IN -->
+
+<section id="userSection" class="hidden">
+
+    <div class="user-box">
+
+        <p>شما وارد حساب هستید.</p>
+
+        <br>
+
+        <p id="userEmail"></p>
+
+    </div>
+
+    <button class="secondary" onclick="logout()">
+        خروج از حساب
+    </button>
+
+    <div id="userMessage" class="message"></div>
+
+</section>
+
+</div><!-- Supabase JS --><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+
+const SUPABASE_URL =
+    "https://gavheagqyqqkfqlervty.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_UOrpoUE64e_3i9OXXktFFw_jDZYuTwS";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+// -----------------------------
+// UI
+// -----------------------------
+
+function showLogin() {
+
+    document
+        .getElementById("loginSection")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("signupSection")
+        .classList.add("hidden");
+
+    document
+        .getElementById("userSection")
+        .classList.add("hidden");
+
+    document
+        .getElementById("pageTitle")
+        .textContent =
+        "ورود به حساب";
+}
+
+
+function showSignup() {
+
+    document
+        .getElementById("loginSection")
+        .classList.add("hidden");
+
+    document
+        .getElementById("signupSection")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("userSection")
+        .classList.add("hidden");
+
+    document
+        .getElementById("pageTitle")
+        .textContent =
+        "ساخت حساب جدید";
+}
+
+
+function showUser(user) {
+
+    document
+        .getElementById("loginSection")
+        .classList.add("hidden");
+
+    document
+        .getElementById("signupSection")
+        .classList.add("hidden");
+
+    document
+        .getElementById("userSection")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("pageTitle")
+        .textContent =
+        "حساب شما";
+
+    document
+        .getElementById("userEmail")
+        .textContent =
+        user.email || "";
+}
+
+
+// -----------------------------
+// SIGN UP
+// -----------------------------
+
+async function signup() {
+
+    const email =
+        document
+            .getElementById("signupEmail")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("signupPassword")
+            .value;
+
+    const passwordConfirm =
+        document
+            .getElementById("signupPasswordConfirm")
+            .value;
+
+    const message =
+        document.getElementById("signupMessage");
+
+    const button =
+        document.getElementById("signupButton");
+
+
+    message.textContent = "";
+    message.className = "message";
+
+
+    if (!email || !password) {
+
+        message.textContent =
+            "ایمیل و رمز عبور را وارد کن.";
+
+        message.classList.add("error");
+
+        return;
+    }
+
+
+    if (password.length < 6) {
+
+        message.textContent =
+            "رمز عبور باید حداقل ۶ کاراکتر باشد.";
+
+        message.classList.add("error");
+
+        return;
+    }
+
+
+    if (password !== passwordConfirm) {
+
+        message.textContent =
+            "رمزهای عبور یکسان نیستند.";
+
+        message.classList.add("error");
+
+        return;
+    }
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "در حال ساخت حساب...";
+
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.auth.signUp({
+
+                email: email,
+
+                password: password,
+
+                options: {
+                    emailRedirectTo:
+                        window.location.origin +
+                        window.location.pathname
+                }
+
+            });
+
+
+        if (error) {
+
+            message.textContent =
+                error.message;
+
+            message.classList.add("error");
+
+            return;
+        }
+
+
+        if (data.session) {
+
+            message.textContent =
+                "حساب با موفقیت ساخته شد.";
+
+            message.classList.add("success");
+
+            showUser(data.user);
+
+        } else {
+
+            message.textContent =
+                "حساب ساخته شد. ایمیل تأیید را بررسی کن.";
+
+            message.classList.add("success");
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+            "خطایی در ساخت حساب رخ داد.";
+
+        message.classList.add("error");
+
+    } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            "ساخت حساب";
+    }
+}
+
+
+// -----------------------------
+// LOGIN
+// -----------------------------
+
+async function login() {
+
+    const email =
+        document
+            .getElementById("loginEmail")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("loginPassword")
+            .value;
+
+    const message =
+        document.getElementById("loginMessage");
+
+    const button =
+        document.getElementById("loginButton");
+
+
+    message.textContent = "";
+    message.className = "message";
+
+
+    if (!email || !password) {
+
+        message.textContent =
+            "ایمیل و رمز عبور را وارد کن.";
+
+        message.classList.add("error");
+
+        return;
+    }
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "در حال ورود...";
+
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+
+                email: email,
+
+                password: password
+
+            });
+
+
+        if (error) {
+
+            message.textContent =
+                error.message;
+
+            message.classList.add("error");
+
+            return;
+        }
+
+
+        showUser(data.user);
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+            "خطایی در ورود رخ داد.";
+
+        message.classList.add("error");
+
+    } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            "ورود";
+    }
+}
+
+
+// -----------------------------
+// LOGOUT
+// -----------------------------
+
+async function logout() {
+
+    const message =
+        document.getElementById("userMessage");
+
+    try {
+
+        const { error } =
+            await supabaseClient.auth.signOut();
+
+
+        if (error) {
+
+            message.textContent =
+                error.message;
+
+            message.className =
+                "message error";
+
+            return;
+        }
+
+
+        message.textContent =
+            "از حساب خارج شدی.";
+
+        message.className =
+            "message success";
+
+        showLogin();
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+            "خطا در خروج از حساب.";
+
+        message.className =
+            "message error";
+    }
+}
+
+
+// -----------------------------
+// CHECK EXISTING SESSION
+// -----------------------------
+
+async function checkSession() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.getUser();
+
+
+    if (error) {
+
+        showLogin();
+
+        return;
+    }
+
+
+    if (data.user) {
+
+        showUser(data.user);
+
+    } else {
+
+        showLogin();
+    }
+}
+
+
+// -----------------------------
+// AUTH STATE
+// -----------------------------
+
+supabaseClient.auth.onAuthStateChange(
+    (event, session) => {
+
+        console.log(
+            "Auth event:",
+            event
+        );
+
+        if (session && session.user) {
+
+            showUser(session.user);
+
+        } else if (
+            event === "SIGNED_OUT"
+        ) {
+
+            showLogin();
+        }
+    }
+);
+
+
+// Start
+
+checkSession();
+
+</script></body>
+  </html>
